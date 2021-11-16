@@ -1,5 +1,7 @@
 package it.nm.botprenotazioni.form;
 
+import it.nm.botprenotazioni.Util;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -31,7 +33,7 @@ public class StartForm implements Form{
         params.put("area",""+area);
         params.put("raggruppamento_servizi",""+raggruppamento_servizi);
         params.put("servizio",""+servizio);
-        params.put("data_inizio",data_inizio.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        params.put("data_inizio", Util.formatDate(data_inizio,"dd-MM-yyyy"));
         params.put("codice_fiscale",codice_fiscale);
         params.put("cognome_nome",nominativo);
         params.put("email",email);

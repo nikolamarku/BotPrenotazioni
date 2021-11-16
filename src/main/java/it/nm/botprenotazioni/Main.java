@@ -13,8 +13,8 @@ public class Main {
         Arguments arguments = new Gson().fromJson(new FileReader(args[0]),Arguments.class);
         LocalDate today = LocalDate.now();
         StartForm  startForm = new StartForm(arguments.getName(),
-                25, //BICF
-                50, //Primo piano - last minute
+                arguments.getArea(),
+                arguments.getServizio(),
                 today,
                 arguments.getCf(),
                 arguments.getEmail()

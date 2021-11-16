@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BookingRequest {
 
@@ -22,40 +23,47 @@ public class BookingRequest {
     private final WebClient webClient;
     private final StartForm startForm;
 
-    public BookingRequest(WebClient webClient, StartForm form) throws IOException {
+    public BookingRequest(WebClient webClient, StartForm form){
         this.startForm = form;
         this.webClient = webClient;
     }
 
-
-    /**
-     * Fa schifo ma il json è peggio di quelli di sirax
-     */
     public List<AvailableSeat> getAvailableSeats() throws Exception {
-        String dateStr = startForm.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        //occhio durata servizio potrebbe cambiare
+        String dateStr = Util.formatDate(startForm.getStartDate(),"yyyy-MM-dd");
         String url = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/ajax.php?lang=en&area="+ startForm.getArea()+"&data_inizio="+dateStr+"&servizio="+ startForm.getService()+"&tentativi=10&tipo=timetable_available&associazione_risorse_servizi=1&chiave_primaria="+ startForm.getCF()+"&durata_servizio=16200";
         String response = webClient.get(url);
         Map<String, Object> seats = new Gson().fromJson(response,Map.class);
-        List<AvailableSeat> availableSeats = new ArrayList<>();
-        for(Map.Entry<String, Object> months : seats.entrySet()){
-            for(Map.Entry<String, Object> date : ( (Map<String,Object>) months.getValue()).entrySet())
-                if(! (date.getValue() instanceof String)){
-                    for(Map.Entry<String,Object> rangeSeat : ( (Map<String,Object>) date.getValue()).entrySet())
-                        for(Map.Entry<String,Object> seat : ( (Map<String,Object>) rangeSeat.getValue()).entrySet()) {
-                            Map<String, Object> seatMap = (Map<String, Object>) seat.getValue();
-                            if(seatMap.get("type").equals("libera")) {
-                                long startTime = ((Double)seatMap.get("start_time")).longValue();
-                                long endTime = ((Double)seatMap.get("end_time")).longValue();
-                                int resource = ((Double)seatMap.get("risorsa")).intValue();
-                                availableSeats.add(new AvailableSeat(startTime,endTime,resource));
-                            }
-                        }
+        return getObjectsAtDepth(seats,4)
+                .stream()
+                .map(this::mapToSeat)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
 
-                }
-
+    private AvailableSeat mapToSeat(Map<String,Object> m){
+        if(m.get("type").equals("libera")) {
+            long startTime = ((Double)m.get("start_time")).longValue();
+            long endTime = ((Double)m.get("end_time")).longValue();
+            int resource = ((Double)m.get("risorsa")).intValue();
+            return new AvailableSeat(startTime,endTime,resource);
         }
-        return availableSeats;
+        return null;
+    }
+
+    /**
+     * Ricorsivamente estrae oggetti ad una determinata profondità
+     * @param current map iniziale
+     * @param depth profondità da raggiungere
+     * @return lista di tutti gli oggetti della profondità scelta
+     */
+    private List<Map<String,Object>> getObjectsAtDepth(Map<String, Object> current, int depth){
+        if(depth == 0)
+            return Collections.singletonList(current);
+        List<Map<String,Object>> result = new ArrayList<>();
+        for(Map.Entry<String,Object> x : current.entrySet())
+            if(x.getValue() instanceof Map)
+                result.addAll(getObjectsAtDepth((Map<String, Object>) x.getValue(), depth - 1));
+        return result;
     }
 
     public AvailableSeat getSeatByTime( int hour) throws Exception {

@@ -1,7 +1,6 @@
 package it.nm.botprenotazioni.form;
 import it.nm.botprenotazioni.AvailableSeat;
-
-import java.time.format.DateTimeFormatter;
+import it.nm.botprenotazioni.Util;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public class TimetableForm implements Form{
         params.put("email", startForm.getEmail());
         params.put("codice_fiscale", startForm.getCF());
         params.put("1605188711","");
-        params.put("data_inizio",availableSeat.getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        params.put("data_inizio", Util.formatDate(availableSeat.getDate(),"dd-MM-yyyy"));
         params.put("timestamp",""+availableSeat.getStartTime());
         params.put("end_time",""+availableSeat.getEndTime());
         params.put("durata_servizio",""+ (availableSeat.getEndTime() - availableSeat.getStartTime()));
