@@ -1,3 +1,10 @@
+Build: sulla root del progetto eseguire ./gradlew build\
+\
+L'eseguibile in build/libs/\
+\
+Run: java -jar BotPrenotazioni-1.0-SNAPSHOT.jar file.json\
+\
+Formato JSON:
 
     {
         "name": "Cognome nome",
