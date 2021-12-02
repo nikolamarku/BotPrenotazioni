@@ -25,7 +25,7 @@ public class StartForm implements Form{
         this.data_inizio = data_inizio;
         this.codice_fiscale = codice_fiscale;
         this.email = email;
-        this.duration = duration;
+        this.duration = duration * 3600;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class StartForm implements Form{
         params.put("cognome_nome",nominativo);
         params.put("email",email);
         params.put("1605188711","");
-        params.put("durata_servizio",""+ (duration*3600));
+        params.put("durata_servizio",""+duration);
         return params;
     }
 
