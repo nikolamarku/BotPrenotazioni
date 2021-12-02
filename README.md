@@ -12,9 +12,17 @@ Formato JSON:
         "email": "email",
         "area": 22,
         "servizio": 50,
-        "hours": [15,15,15,-1,15,-1,-1] 
+        "day": [
+            {
+                "hour": 15,
+                "duration": 2
+            },
+            null
+            ,
+            ... fino a size(day) = 7
+        ] 
     }
 
 Area: 25 (BICF)\
 Servizio: 50 (Primo piano last minute BICF)\
-hours: vettore di 7 elementi in cui ciascun elemento indica l'ora da prenotare per quel giorno. -1 Se non si vuole prenotare.
+days: vettore di 7 elementi in cui ciascun elemento indica l'ora e durata da prenotare per quel giorno. null se non si vuole prenotare.
