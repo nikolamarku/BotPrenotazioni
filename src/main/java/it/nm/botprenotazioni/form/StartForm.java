@@ -16,14 +16,16 @@ public class StartForm implements Form{
     private final String codice_fiscale;
     private final String email;
     private final String nominativo;
+    private final int duration;
 
-    public StartForm(String nominativo, int area, int servizio, LocalDate data_inizio, String codice_fiscale, String email) {
+    public StartForm(String nominativo, int area, int servizio, LocalDate data_inizio, String codice_fiscale, String email,int duration) {
         this.nominativo = nominativo;
         this.area = area;
         this.servizio = servizio;
         this.data_inizio = data_inizio;
         this.codice_fiscale = codice_fiscale;
         this.email = email;
+        this.duration = duration;
     }
 
     @Override
@@ -38,6 +40,7 @@ public class StartForm implements Form{
         params.put("cognome_nome",nominativo);
         params.put("email",email);
         params.put("1605188711","");
+        params.put("durata_servizio",""+ (duration*3600));
         return params;
     }
 
@@ -63,5 +66,9 @@ public class StartForm implements Form{
 
     public String getCF() {
         return codice_fiscale;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }

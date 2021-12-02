@@ -5,29 +5,31 @@ import it.nm.botprenotazioni.form.StartForm;
 
 import java.io.FileReader;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
         Arguments arguments = new Gson().fromJson(new FileReader(args[0]),Arguments.class);
         LocalDate today = LocalDate.now(ZoneId.of("GMT+1"));
-        StartForm  startForm = new StartForm(arguments.getName(),
-                arguments.getArea(),
-                arguments.getServizio(),
-                today,
-                arguments.getCf(),
-                arguments.getEmail()
-        );
-        BookingRequest bookingRequest = new BookingManager().newBookingRequest(startForm);
-        Integer chosenTime = arguments.getChosenTimeForDayOfWeek(today.getDayOfWeek().getValue()-1)
+        Arguments.Day currentBookingDay = arguments.getChosenTimeForDayOfWeek(today.getDayOfWeek().getValue()-1)
                 .orElse(null);
-        if(chosenTime == null)
+
+        if(currentBookingDay == null)
             System.out.println("No booking for today");
-        else
-            book(bookingRequest,chosenTime);
+        else{
+
+            StartForm  startForm = new StartForm(arguments.getName(),
+                    arguments.getArea(),
+                    arguments.getServizio(),
+                    today,
+                    arguments.getCf(),
+                    arguments.getEmail(),
+                    currentBookingDay.getDuration()
+            );
+            BookingRequest bookingRequest = new BookingManager().newBookingRequest(startForm);
+            book(bookingRequest,currentBookingDay.getHour());
+        }
     }
 
     private static void book(BookingRequest bookingRequest, int chosenTime) throws Exception {

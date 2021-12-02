@@ -23,14 +23,16 @@ public class BookingRequest {
     private final WebClient webClient;
     private final StartForm startForm;
 
-    public BookingRequest(WebClient webClient, StartForm form){
+    public BookingRequest(WebClient webClient, StartForm form) throws IOException {
         this.startForm = form;
         this.webClient = webClient;
+        //mi serve salvare il coookie
+        webClient.get("https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/index.php");
     }
 
     public List<AvailableSeat> getAvailableSeats() throws Exception {
         String dateStr = Util.formatDate(startForm.getStartDate(),"yyyy-MM-dd");
-        String url = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/ajax.php?lang=en&area="+ startForm.getArea()+"&data_inizio="+dateStr+"&servizio="+ startForm.getService()+"&tentativi=10&tipo=timetable_available&associazione_risorse_servizi=1&chiave_primaria="+ startForm.getCF()+"&durata_servizio=16200";
+        String url = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/ajax.php?lang=en&area="+ startForm.getArea()+"&data_inizio="+dateStr+"&servizio="+ startForm.getService()+"&tentativi=10&tipo=timetable_available&associazione_risorse_servizi=1&chiave_primaria="+ startForm.getCF()+"&durata_servizio="+startForm.getDuration();
         String response = webClient.get(url);
         Map<String, Object> seats = new Gson().fromJson(response,Map.class);
         return getObjectsAtDepth(seats,4)
@@ -66,7 +68,7 @@ public class BookingRequest {
         return result;
     }
 
-    public AvailableSeat getSeatByTime( int hour) throws Exception {
+    public AvailableSeat getSeatByTime(int hour) throws Exception {
         return getAvailableSeats()
                 .stream()
                 .filter(seat -> seat.getDate().getHour() == hour)
