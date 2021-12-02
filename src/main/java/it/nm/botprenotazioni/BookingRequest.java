@@ -11,9 +11,11 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class BookingRequest {
+
 
     private final static String FORM_PAGE = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/index.php?include=form";
     private final static String TIMETABLE_PAGE = "https://orari-be.divsi.unimi.it/PortaleEasyPlanning/biblio/index.php?include=timetable";

@@ -14,9 +14,13 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class WebClient {
+
+
+    private static final Logger logger = Logger.getLogger(WebClient.class.getName());
 
     private final CloseableHttpClient httpClient;
 
@@ -26,12 +30,14 @@ public class WebClient {
 
 
     public String get(String url) throws IOException {
+        logger.info("URL: "+url);
         HttpGet request = new HttpGet(url);
         setHeaders(request);
         return contentAsString(httpClient.execute(request));
     }
 
     public String post(String url, Map<String, String> params) throws Exception {
+        logger.info("URL: "+url);
         HttpPost request = new HttpPost(url);
         setHeaders(request);
         request.setEntity(new UrlEncodedFormEntity(toNameValuePairList(params)));

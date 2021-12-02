@@ -6,8 +6,11 @@ import it.nm.botprenotazioni.form.StartForm;
 import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.logging.Logger;
 
 public class Main {
+
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) throws Exception {
         Arguments arguments = new Gson().fromJson(new FileReader(args[0]),Arguments.class);
@@ -16,7 +19,7 @@ public class Main {
                 .orElse(null);
 
         if(currentBookingDay == null)
-            System.out.println("No booking for today");
+            logger.info("No booking for today");
         else{
 
             StartForm  startForm = new StartForm(arguments.getName(),
@@ -33,16 +36,16 @@ public class Main {
     }
 
     private static void book(BookingRequest bookingRequest, int chosenTime) throws Exception {
-        System.out.println("Trying to make a reservation at "+chosenTime+":00...");
+        logger.info("Trying to make a reservation at "+chosenTime+":00...");
         AvailableSeat foundSeat = bookingRequest.getSeatByTime(chosenTime);
         if(foundSeat != null)
-            System.out.println(
+            logger.info(
                     bookingRequest.book(foundSeat) ?
                             "Booking confirmed at "+ chosenTime +":00" :
                             "Error while trying to make the reservation"
             );
         else
-            System.out.println("No available seat at "+chosenTime+":00");
+            logger.info("No available seat at "+chosenTime+":00");
     }
 
 }
